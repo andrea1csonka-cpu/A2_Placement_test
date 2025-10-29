@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2 Placement Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f7f9;
+            color: #333;
+        }
+        #header {
+            text-align: center;
+            padding: 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 20px;
+        }
+        #header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        #header p {
+            font-size: 1.2em;
+            margin-top: 5px;
+        }
+        #quiz-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            background-color: #e9ecef;
+            padding: 10px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border-left: 5px solid #007bff;
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+        .question-block {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .answer-option {
+            display: block;
+            margin-bottom: 5px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+        .answer-option:hover {
+            background-color: #f8f9fa;
+        }
+        .answer-option input[type="radio"] {
+            margin-right: 10px;
+        }
+        .submit-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-top: 30px;
+            font-size: 1.2em;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .submit-button:hover {
+            background-color: #218838;
+        }
+        #results {
+            margin-top: 30px;
+            padding: 20px;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            background-color: #e7f0ff;
+            display: none; /* Initially hidden */
+        }
+        #teacher-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #teacher-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+        }
+        #teacher-panel {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #fff3cd; /* Warning color */
+            border-radius: 5px;
+            display: none;
+        }
+        .warning-text {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .points-info {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        /* New styles for input fields */
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .input-group input[type="text"], 
+        .input-group input[type="email"],
+        .input-group input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Padding is included in width */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header">
+        <h1>A2 Placement Test</h1>
+        </div>
+
+    <div id="quiz-container">
+        
+        <div class="section-title">Diák Adatok / Information</div>
+        <div class="input-group">
+            <label for="student-name">Name (Név):</label>
+            <input type="text" id="student-name" required>
+        </div>
+        <div class="input-group">
+            <label for="student-year">Year (Évfolyam / Csoport):</label>
+            <input type="text" id="student-year" required>
+        </div>
+        <div class="input-group">
+            <label for="student-email">Email Address (E-mail cím):</label>
+            <input type="email" id="student-email" required>
+        </div>
+        <div class="input-group">
+            <label for="test-date">Date (Dátum):</label>
+            <input type="date" id="test-date" required>
+        </div>
+        
+        <form id="placement-test-form">
+            </form>
+
+        <button class="submit-button" onclick="submitTest()">Teszt Kiértékelése</button>
+
+        <div id="results">
+            <h2>Eredmények</h2>
+            <p id="student-info-summary"></p>
+            <p id="score-summary"></p>
+            <button onclick="downloadPDF()" class="submit-button" style="background-color: #dc3545;">Eredmények Letöltése PDF-ben (Szimulált)</button>
+        </div>
+
+        <div id="teacher-link">
+            <a onclick="showTeacherLogin()">👩‍🏫 TANÁRI FELÜLET / EREDMÉNYEK MEGTEKINTÉSE</a>
+        </div>
+
+        <div id="teacher-panel">
+            <h3>Tanári Belépés</h3>
+            <p class="warning-text">⚠️ **SZIMULÁLT FELÜLET FIGYELMEZTETÉS:** A valós beküldött eredmények tárolása, a biztonságos bejelentkezés, az eredmények törlése és a PDF generálás szerver-oldali kódot igényel, amit ez a felület nem tud biztosítani. Ez a felület csak a kliens oldali funkciókat szimulálja.</p>
+            <input type="password" id="teacher-code" placeholder="Tanári Kód">
+            <button onclick="loginTeacherPanel()">Belépés</button>
+            <div id="teacher-content" style="display:none; margin-top: 15px;">
+                <h4>Beküldött Eredmények (Kliens Oldali Törlés Szimulációja)</h4>
+                <p>Nincs tárolt eredmény, mivel a tárolás háttérrendszert igényelne. Ha lennének adatok, itt lennének egyesével törölhetőek, a **Törlés** gombbal.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            // GRAMMAR I (1 pont/kérdés)
+            { id: 1, section: "GRAMMAR I", q: "Válaszd ki a helyes Present Continuous formát: She ___ a book right now.", options: ["read", "is reading", "reads", "are reading"], correct: 1, points: 1 },
+            { id: 2, section: "GRAMMAR I", q: "Melyik a helyes Past Simple kérdés: ___ you ___ to the party last night?", options: ["Do / go", "Did / went", "Did / go", "Were / go"], correct: 2, points: 1 },
+            { id: 3, section: "GRAMMAR I", q: "Válaszd ki a 'buy' (vásárolni) helyes múlt idejét: I ___ a new phone yesterday.", options: ["buyed", "bought", "was buying", "buys"], correct: 1, points: 1 },
+            { id: 4, section: "GRAMMAR I", q: "Melyik a helyes tagadás Present Continuous-ban: They ___ talking on the phone.", options: ["isn't", "doesn't", "aren't", "am not"], correct: 2, points: 1 },
+            { id: 5, section: "GRAMMAR I", q: "Válaszd ki a 'have' (birtokolni) helyes múlt idejét: We ___ dinner at 7 o'clock.", options: ["haved", "have", "had", "were having"], correct: 2, points: 1 },
+            { id: 6, section: "GRAMMAR I", q: "Melyik szó illik az időhatározóként Present Continuous-hoz:", options: ["every day", "yesterday", "at the moment", "often"], correct: 2, points: 1 },
+            { id: 7, section: "GRAMMAR I", q: "Melyik a helyes tagadás Past Simple-ben: He ___ come to school yesterday.", options: ["didn't came", "not came", "didn't come", "doesn't come"], correct: 2, points: 1 },
+            { id: 8, section: "GRAMMAR I", q: "Melyik a 'see' (látni) helyes múlt ideje: I ___ my friend last week.", options: ["saw", "seed", "seen", "look"], correct: 0, points: 1 },
+            // GRAMMAR II (1 pont/kérdés)
+            { id: 9, section: "GRAMMAR II", q: "Melyik fejezi ki a jövőre vonatkozó szándékot: I ___ visit my grandparents next weekend.", options: ["will", "am going to", "do", "was"], correct: 1, points: 1 },
+            { id: 10, section: "GRAMMAR II", q: "Válaszd ki a helyes jövő idő (spontán döntés): \"I'm cold.\" \"I ___ close the window.\"", options: ["am going to", "will", "close", "am closing"], correct: 1, points: 1 },
+            { id: 11, section: "GRAMMAR II", q: "Válaszd ki a 'fast' (gyors) helyes középfokát: A plane is ___ a car.", options: ["more fast than", "faster than", "fastest than", "as fast as"], correct: 1, points: 1 },
+            { id: 12, section: "GRAMMAR II", q: "Válaszd ki a 'comfortable' (kényelmes) helyes középfokát: This sofa is ___ the old one.", options: ["comfortabler than", "most comfortable than", "more comfortable than", "comfortable than"], correct: 2, points: 1 },
+            { id: 13, section: "GRAMMAR II", q: "Alakítsd át 'slow' (lassú) melléknevet határozóvá: He drives very __.", options: ["slow", "slowly", "slower", "slowness"], correct: 1, points: 1 },
+            { id: 14, section: "GRAMMAR II", q: "Válaszd ki a 'good' (jó) helyes rendhagyó középfokát: My grades are ___ yours.", options: ["gooder than", "better than", "more good than", "weller than"], correct: 1, points: 1 },
+            { id: 15, section: "GRAMMAR II", q: "Melyik szó illik a mondatba (előrejelzés): I think it ___ rain tomorrow.", options: ["is going to", "is", "will", "would"], correct: 2, points: 1 },
+            { id: 16, section: "GRAMMAR II", q: "Melyik szó illik a mondatba (összehasonlítás): She is ___ tall ___ her sister.", options: ["tall as", "as tall as", "taller as", "taller than as"], correct: 1, points: 1 },
+            // GRAMMAR III (1 pont/kérdés)
+            { id: 17, section: "GRAMMAR III", q: "Melyik fejezi ki a külső kényszert/szabályt: You ___ wear a seatbelt in the car.", options: ["should", "have to", "can", "might"], correct: 1, points: 1 },
+            { id: 18, section: "GRAMMAR III", q: "Melyik fejezi ki a tanácsot (nem szigorú szabály): You ___ study more for the test.", options: ["must", "have to", "should", "need"], correct: 2, points: 1 },
+            { id: 19, section: "GRAMMAR III", q: "Melyik a helyes prepozíció: I'm interested ___ learning French.", options: ["on", "at", "in", "of"], correct: 2, points: 1 },
+            { id: 20, section: "GRAMMAR III", q: "Melyik a helyes tagadás ('have to'): She ___ work on weekends.", options: ["doesn't has to", "doesn't have to", "isn't have to", "not have to"], correct: 1, points: 1 },
+            { id: 21, section: "GRAMMAR III", q: "Melyik prepozícióval használjuk a 'good' (jó vmiben) melléknevet: He is very good ___ maths.", options: ["in", "at", "for", "to"], correct: 1, points: 1 },
+            { id: 22, section: "GRAMMAR III", q: "Melyik a helyes prepozíció: We were surprised ___ the news.", options: ["by", "for", "about", "with"], correct: 0, points: 1 },
+            { id: 23, section: "GRAMMAR III", q: "Melyik fejezi ki a tiltást/szükségesség hiányát: You ___ smoke here.", options: ["shouldn't", "have not to", "don't have to", "mustn't"], correct: 3, points: 1 },
+            { id: 24, section: "GRAMMAR III", q: "Melyik a helyes prepozíció: Are you worried ___ your exam?", options: ["about", "in", "for", "by"], correct: 0, points: 1 },
+            // GRAMMAR IV (1 pont/kérdés)
+            { id: 25, section: "GRAMMAR IV", q: "Melyik a helyes kiegészítés: We need ___ milk to make a cake.", options: ["a few", "a lot of", "many", "a little of"], correct: 1, points: 1 },
+            { id: 26, section: "GRAMMAR IV", q: "Melyik kérdőszó illik a mondatba: ___ money do you have?", options: ["How many", "How much", "How long", "How often"], correct: 1, points: 1 },
+            { id: 27, section: "GRAMMAR IV", q: "Melyik a helyes kiegészítés (tagadó mondat): I don't have ___ apples.", options: ["some", "many", "any", "much"], correct: 2, points: 1 },
+            { id: 28, section: "GRAMMAR IV", q: "Melyik a helyes kiegészítés (ajánlás): Would you like ___ coffee?", options: ["any", "a", "some", "much"], correct: 2, points: 1 },
+            { id: 29, section: "GRAMMAR IV", q: "Melyik szó számolható főnév (Countable):", options: ["information", "furniture", "chair", "water"], correct: 2, points: 1 },
+            { id: 30, section: "GRAMMAR IV", q: "Melyik kérdőszó illik a mondatba: ___ people were at the concert?", options: ["How much", "How many", "How often", "How long"], correct: 1, points: 1 },
+            { id: 31, section: "GRAMMAR IV", q: "Melyik a helyes kiegészítés: There are ___ books on the shelf.", options: ["much", "a lot of", "a little", "any"], correct: 1, points: 1 },
+            { id: 32, section: "GRAMMAR IV", q: "Melyik szó nem számolható főnév (Uncountable):", options: ["student", "key", "time", "cookie"], correct: 2, points: 1 },
+            // VOCABULARY I (1 pont/kérdés)
+            { id: 33, section: "VOCABULARY I", q: "Melyik szó jelenti azt, hogy 'ideges/izgatott' (valami jó miatt)?", options: ["bored", "excited", "tired", "sad"], correct: 1, points: 1 },
+            { id: 34, section: "VOCABULARY I", q: "Melyik a 'Library' (könyvtár) angol megfelelője?", options: ["Bookshop", "School", "Library", "Museum"], correct: 2, points: 1 },
+            { id: 35, section: "VOCABULARY I", q: "Melyik szó jelenti azt, hogy 'kaland'?", options: ["Routine", "Adventure", "Homework", "Sleep"], correct: 1, points: 1 },
+            { id: 36, section: "VOCABULARY I", q: "Melyik kifejezés illik a 'get ___' szóhoz, ha repülőre szállsz?", options: ["on", "up", "in", "off"], correct: 0, points: 1 },
+            { id: 37, section: "VOCABULARY I", q: "Melyik szó írja le azt a személyt, aki 'nem szeret sokat beszélni'?", options: ["talkative", "friendly", "shy", "active"], correct: 2, points: 1 },
+            { id: 38, section: "VOCABULARY I", q: "Melyik szó jelenti azt, hogy 'állatkert'?", options: ["Park", "Farm", "Zoo", "Aquarium"], correct: 2, points: 1 },
+            { id: 39, section: "VOCABULARY I", q: "Melyik a 'difficult' (nehéz) szó ellentéte?", options: ["hard", "easy", "fast", "slow"], correct: 1, points: 1 },
+            { id: 40, section: "VOCABULARY I", q: "Melyik szó jelenti azt, hogy 'szélhámos' (mint filmekben) ?", options: ["actor", "hero", "villain", "star"], correct: 2, points: 1 },
+            { id: 41, section: "VOCABULARY I", q: "Melyik kifejezés illik a 'do ___' szóhoz, ami az időjárásra vonatkozik?", options: ["rain", "snow", "the washing-up", "nothing"], correct: 3, points: 1 },
+            { id: 42, section: "VOCABULARY I", q: "Melyik szó jelenti azt, hogy 'nagylelkű' (Generous)?", options: ["mean", "generous", "shy", "quiet"], correct: 1, points: 1 },
+            { id: 43, section: "VOCABULARY I", q: "Melyik szó jelenti azt, hogy 'menetrend' (buszra, vonatra)?", options: ["Ticket", "Map", "Timetable", "Driver"], correct: 2, points: 1 },
+            { id: 44, section: "VOCABULARY I", q: "Melyik szó jelenti azt, hogy 'szórakoztató, vicces' (Funny)?", options: ["serious", "quiet", "funny", "shy"], correct: 2, points: 1 },
+            { id: 45, section: "VOCABULARY I", q: "Melyik szó jelenti azt, hogy 'bevásárlóközpont'?", options: ["Supermarket", "Shop", "Shopping centre", "Post office"], correct: 2, points: 1 },
+            { id: 46, section: "VOCABULARY I", q: "Melyik szó jelenti azt, hogy 'költség' (Price)?", options: ["Cost", "Value", "Sale", "Bill"], correct: 0, points: 1 },
+            { id: 47, section: "VOCABULARY I", q: "Melyik kifejezés illik a 'take ___' szóhoz, ami az alvásra vonatkozik?", options: ["a book", "a nap", "a walk", "a bath"], correct: 1, points: 1 },
+            { id: 48, section: "VOCABULARY I", q: "Melyik a 'safe' (biztonságos) szó ellentéte?", options: ["dangerous", "good", "happy", "easy"], correct: 0, points: 1 },
+            // VOCABULARY II (1 pont/kérdés)
+            { id: 49, section: "VOCABULARY II", q: "Hogyan írjuk helyesen a '22nd' (huszonkettedik) számot betűvel?", options: ["twenty second", "twentieth second", "twenty-two", "twenty-second"], correct: 3, points: 1 },
+            { id: 50, section: "VOCABULARY II", q: "Melyik a helyes prepozíció a dátumoknál: My birthday is ___ June 10th.", options: ["in", "at", "on", "by"], correct: 2, points: 1 },
+            { id: 51, section: "VOCABULARY II", q: "Melyik szám a 'fifty-five' (ötvenöt) utáni?", options: ["sixty", "fifty-six", "fifty-four", "forty-five"], correct: 1, points: 1 },
+            { id: 52, section: "VOCABULARY II", q: "Melyik kiejtés illik a 'thousand' (ezer) számhoz?", options: ["thousant", "thousand", "thouzent", "thousandth"], correct: 1, points: 1 },
+            { id: 53, section: "VOCABULARY II", q: "Melyik a helyes sorszámnév (Ordinal number): 'négy' (4)?", options: ["fourth", "four", "fouth", "fourty"], correct: 0, points: 1 },
+            { id: 54, section: "VOCABULARY II", q: "Hogyan kérdeznél rá, hogy 'Milyen gyakran csinálsz valamit?'", options: ["How much?", "How often?", "How long?", "What time?"], correct: 1, points: 1 },
+            { id: 55, section: "VOCABULARY II", q: "A 'quarter to nine' (háromnegyed kilenc) időpont digiális formában:", options: ["9:15", "8:45", "9:45", "8:15"], correct: 1, points: 1 },
+            { id: 56, section: "VOCABULARY II", q: "Melyik szót használjuk a 'keveset' kifejezésére számolható főneveknél?", options: ["little", "few", "much", "a lot"], correct: 1, points: 1 },
+            { id: 57, section: "VOCABULARY II", q: "Hogyan olvassuk ki az '1845' évet (dátum)?", options: ["one thousand eight hundred forty-five", "eighteen forty-five", "eighteen hundred and forty-five", "one eight four five"], correct: 1, points: 1 },
+            { id: 58, section: "VOCABULARY II", q: "Melyik szó illik a mondatba: We have ___ of time before the train leaves.", options: ["much", "many", "a lot", "little"], correct: 2, points: 1 },
+            { id: 59, section: "VOCABULARY II", q: "Melyik a 'twelve' (tizenkettő) sorszámneve?", options: ["twelfe", "twelveth", "twelfth", "twelve-th"], correct: 2, points: 1 },
+            { id: 60, section: "VOCABULARY II", q: "A 10:05 időpont angolul:", options: ["ten past five", "five to ten", "five past ten", "ten five"], correct: 2, points: 1 },
+            { id: 61, section: "VOCABULARY II", q: "Melyik szó illik a mondatba: There are only ___ cars in the car park (kevés).", options: ["much", "a little", "a few", "any"], correct: 2, points: 1 },
+            { id: 62, section: "VOCABULARY II", q: "Melyik a helyes prepozíció hónapoknál: I was born ___ August.", options: ["on", "at", "in", "of"], correct: 2, points: 1 },
+            { id: 63, section: "VOCABULARY II", q: "A 'three hundred and seventy-one' digitális formában:", options: ["3071", "371", "317", "3701"], correct: 1, points: 1 },
+            { id: 64, section: "VOCABULARY II", q: "Hogyan olvassuk ki a '0,5' számot?", options: ["zero point five", "zero five", "point five", "half"], correct: 0, points: 1 },
+            // VOCABULARY III (1 pont/kérdés)
+            { id: 65, section: "VOCABULARY III", q: "Melyik szó illik a 'do ___' kifejezéshez, ami a házi munkára vonatkozik?", options: ["the shopping", "the park", "the friends", "a movie"], correct: 0, points: 1 },
+            { id: 66, section: "VOCABULARY III", q: "Melyik kifejezés illik a 'make ___' szóhoz, ami az ágyra vonatkozik?", options: ["a bed", "a bath", "a tea", "a lunch"], correct: 0, points: 1 },
+            { id: 67, section: "VOCABULARY III", q: "Melyik szó jelenti azt, hogy 'sült krumpli' (British English)?", options: ["fries", "chips", "crisps", "potatoes"], correct: 1, points: 1 },
+            { id: 68, section: "VOCABULARY III", q: "Melyik szó jelenti azt, hogy 'hűtőszekrény' (Fridge)?", options: ["cooker", "microwave", "fridge", "wardrobe"], correct: 2, points: 1 },
+            { id: 69, section: "VOCABULARY III", q: "Melyik szó jelenti azt, hogy 'szörfözni'?", options: ["sail", "dive", "surf", "swim"], correct: 2, points: 1 },
+            { id: 70, section: "VOCABULARY III", q: "Melyik szó jelenti azt, hogy 'jelszó' (Password)?", options: ["username", "address", "password", "website"], correct: 2, points: 1 },
+            { id: 71, section: "VOCABULARY III", q: "Melyik szó jelenti azt, hogy 'zöldség' (Vegetable)?", options: ["fruit", "vegetable", "meat", "rice"], correct: 1, points: 1 },
+            { id: 72, section: "VOCABULARY III", q: "Melyik szó illik a 'go ___' kifejezéshez, ami a vásárlásra vonatkozik?", options: ["to school", "shopping", "home", "to work"], correct: 1, points: 1 },
+            { id: 73, section: "VOCABULARY III", q: "Melyik szó jelenti azt, hogy 'gördeszka'?", options: ["bicycle", "scooter", "skateboard", "bus"], correct: 2, points: 1 },
+            { id: 74, section: "VOCABULARY III", q: "Melyik szó illik a 'be ___' kifejezéshez, ami az időjárásra vonatkozik?", options: ["cloudy", "rain", "snow", "sun"], correct: 0, points: 1 },
+            { id: 75, section: "VOCABULARY III", q: "Melyik szó jelenti azt, hogy 'vígjáték' (Comedy)?", options: ["thriller", "horror", "comedy", "action"], correct: 2, points: 1 },
+            { id: 76, section: "VOCABULARY III", q: "Melyik szó jelenti azt, hogy 'csatlakoztatni' (Connect)?", options: ["disconnect", "link", "turn off", "check"], correct: 1, points: 1 },
+            { id: 77, section: "VOCABULARY III", q: "Melyik szó jelenti azt, hogy 'szendvics' (Sandwich)?", options: ["soup", "salad", "sandwich", "dessert"], correct: 2, points: 1 },
+            { id: 78, section: "VOCABULARY III", q: "Melyik szó illik a 'play ___' kifejezéshez, ami egy hangszerre vonatkozik?", options: ["the sport", "the guitar", "the TV", "the radio"], correct: 1, points: 1 },
+            { id: 79, section: "VOCABULARY III", q: "Melyik a 'modern' (Modern) szó ellentéte?", options: ["contemporary", "new", "old-fashioned", "high-tech"], correct: 2, points: 1 },
+            { id: 80, section: "VOCABULARY III", q: "Melyik szó jelenti azt, hogy 'fáradt' (Tired)?", options: ["energetic", "sleepy", "happy", "active"], correct: 1, points: 1 },
+            // READING COMPREHENSION (2 pont/kérdés)
+            { id: 81, section: "Reading Comprehension", q: "Text 1: My Holiday Last Summer: Why did the writer travel alone?", options: ["Because the family was busy.", "Because the writer needed quiet time away from the city.", "Because the cottage was too small.", "Because the train was slow."], correct: 1, points: 2, text: "Text 1: My Holiday Last Summer\nLast summer, I decided to take a short trip to the mountains. I didn't go with my family; I went alone because I needed a break from the city noise. I travelled by train, which was a slow but very relaxing journey. I stayed in a small, traditional wooden cottage near a beautiful lake. Every morning, I woke up early and walked for an hour before breakfast. In the evenings, I usually read a book next to the fireplace. I really liked the quiet life there, and I didn't spend much money because I cooked my own meals. The weather was mostly sunny and warm, which was perfect for my walks. I felt very calm and happy when I came back home." },
+            { id: 82, section: "Reading Comprehension", q: "Text 1: What was true about the journey to the mountains?", options: ["It was fast and modern.", "It was long and expensive.", "It was slow but relaxing.", "The writer drove a car."], correct: 2, points: 2 },
+            { id: 83, section: "Reading Comprehension", q: "Text 1: What did the writer do first every morning?", options: ["Cooked breakfast.", "Read a book.", "Walked before eating.", "Swam in the lake."], correct: 2, points: 2 },
+            { id: 84, section: "Reading Comprehension", q: "Text 1: How did the writer save money on the trip?", options: ["By travelling by train.", "By reading next to the fireplace.", "By cooking his/her own meals.", "By walking for an hour."], correct: 2, points: 2 },
+            { id: 85, section: "Reading Comprehension", q: "Text 1: What word describes the writer's feeling at the end of the holiday?", options: ["Tired and bored.", "Calm and happy.", "Nervous and stressed.", "Worried and sad."], correct: 1, points: 2 },
+            { id: 86, section: "Reading Comprehension", q: "Text 2: The New Shopping Centre: What is the new shopping centre going to offer to movie lovers?", options: ["Free tickets.", "All the new movies at the cinema.", "A small library.", "Only old films."], correct: 1, points: 2, text: "Text 2: The New Shopping Centre\nThe new shopping centre opened last month and it is much bigger than the old one downtown. It has more than a hundred shops and a cinema that is going to show all the new movies. The prices in the shops are generally lower, but the clothes are not as high quality as the boutique shops in the city. It also has a big food court where you can choose from a variety of international dishes. However, many people complain that it is very difficult to get there by public transport. You have to take two buses to arrive. They are planning to build a new tram line next year, which will make travelling to the centre much easier. The centre will be even more popular when the new line opens." },
+            { id: 87, section: "Reading Comprehension", q: "Text 2: What is the main difference between the new centre's clothes and the boutique clothes?", options: ["The boutique clothes are cheaper.", "The boutique clothes are not as high quality.", "The centre's clothes are not as high quality.", "They are exactly the same."], correct: 2, points: 2 },
+            { id: 88, section: "Reading Comprehension", q: "Text 2: What is the main problem with the new shopping centre right now?", options: ["The shops are too expensive.", "The food court is too small.", "Getting there by public transport is difficult.", "It has too many shops."], correct: 2, points: 2 },
+            { id: 89, section: "Reading Comprehension", q: "Text 2: What are they planning to do next year to improve access?", options: ["Build a new car park.", "Offer free taxis.", "Build a new tram line.", "Reduce the number of buses."], correct: 2, points: 2 },
+            { id: 90, section: "Reading Comprehension", q: "Text 2: What will happen to the centre's popularity when the new transport line opens?", options: ["It will become less popular.", "It will be even more popular.", "It will close down.", "Nothing will change."], correct: 1, points: 2 }
+        ];
+
+        let currentSection = "";
+        const quizForm = document.getElementById('placement-test-form');
+
+        // Összes kérdés betöltése
+        function loadQuestions() {
+            quizData.forEach(item => {
+                // Szekció cím beillesztése, ha új
+                if (item.section !== currentSection) {
+                    const sectionTitle = document.createElement('h2');
+                    sectionTitle.className = 'section-title';
+                    sectionTitle.textContent = item.section.toUpperCase().replace(/\s*([A-Z]*\s*)/g, ' $1');
+                    quizForm.appendChild(sectionTitle);
+
+                    // Speciális szövegek Reading Comprehension-höz
+                    if (item.section === "Reading Comprehension" && item.text) {
+                        const textBlock = document.createElement('div');
+                        textBlock.style.whiteSpace = 'pre-wrap';
+                        textBlock.style.backgroundColor = '#fff9e8';
+                        textBlock.style.padding = '15px';
+                        textBlock.style.border = '1px dashed #ffc107';
+                        textBlock.style.borderRadius = '5px';
+                        textBlock.textContent = item.text.replace(/Text \d: /g, '');
+                        quizForm.appendChild(textBlock);
+                        const pointsNote = document.createElement('p');
+                        pointsNote.className = 'points-info';
+                        pointsNote.textContent = '(Ezek a kérdések 2 pontot érnek. A fenti szöveg elolvasása után válaszoljon a kérdésekre.)';
+                        quizForm.appendChild(pointsNote);
+                    } else if (item.section !== "Reading Comprehension") {
+                         const pointsNote = document.createElement('p');
+                        pointsNote.className = 'points-info';
+                        pointsNote.textContent = '(Minden kérdés 1 pontot ér.)';
+                        quizForm.appendChild(pointsNote);
+                    }
+
+                    currentSection = item.section;
+                }
+
+                // Kérdés blokk létrehozása
+                const questionBlock = document.createElement('div');
+                questionBlock.className = 'question-block';
+                
+                const questionText = document.createElement('p');
+                questionText.className = 'question-text';
+                questionText.textContent = `${item.id}. ${item.q}`;
+                questionBlock.appendChild(questionText);
+
+                // Opciók létrehozása
+                item.options.forEach((option, index) => {
+                    const label = document.createElement('label');
+                    label.className = 'answer-option';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = `q${item.id}`;
+                    input.value = index;
+                    
+                    // A, B, C, D jelölések
+                    const optionLetters = ['A', 'B', 'C', 'D'];
+                    
+                    label.appendChild(input);
+                    label.innerHTML += `${optionLetters[index]}. ${option}`;
+                    questionBlock.appendChild(label);
+                });
+
+                quizForm.appendChild(questionBlock);
+            });
+        }
+
+        // Teszt kiértékelése
+        function submitTest() {
+            // Ellenőrizze a diákadatokat
+            const studentName = document.getElementById('student-name').value.trim();
+            const studentYear = document.getElementById('student-year').value.trim();
+            const studentEmail = document.getElementById('student-email').value.trim();
+            const testDate = document.getElementById('test-date').value.trim();
+
+            if (!studentName || !studentYear || !studentEmail || !testDate) {
+                alert("Kérjük, töltse ki az összes diákadat mezőt a kiértékelés előtt!");
+                return;
+            }
+
+            let score = 0;
+            const maxScore = 100;
+            let correctAnswers = 0;
+            let incorrectAnswers = 0;
+            let unanswered = 0;
+            const totalQuestions = quizData.length;
+
+            quizData.forEach(item => {
+                const selectedOption = document.querySelector(`input[name="q${item.id}"]:checked`);
+                
+                if (selectedOption) {
+                    const selectedIndex = parseInt(selectedOption.value);
+                    if (selectedIndex === item.correct) {
+                        score += item.points;
+                        correctAnswers++;
+                    } else {
+                        incorrectAnswers++;
+                    }
+                } else {
+                    unanswered++;
+                }
+            });
+
+            const resultsDiv = document.getElementById('results');
+            const scoreSummary = document.getElementById('score-summary');
+            const studentInfoSummary = document.getElementById('student-info-summary');
+            
+            studentInfoSummary.innerHTML = `
+                **Név:** ${studentName}<br>
+                **Évfolyam/Csoport:** ${studentYear}<br>
+                **E-mail cím:** ${studentEmail}<br>
+                **Dátum:** ${testDate}<br>
+                ---
+            `;
+
+            scoreSummary.innerHTML = `
+                Összpontszám: **${score} / ${maxScore}** pont<br>
+                Helyes válaszok: **${correctAnswers}** / ${totalQuestions}<br>
+                Helytelen válaszok: **${incorrectAnswers}**<br>
+                Megválaszolatlan kérdések: **${unanswered}**
+            `;
+            resultsDiv.style.display = 'block';
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        // PDF Letöltés szimuláció
+        function downloadPDF() {
+            alert("⚠️ A PDF letöltési funkció (az eredmények valódi fájlba mentése) szerver-oldali kódot igényel, ami ebben a környezetben nem valósítható meg. Ez egy szimulált funkció.");
+            
+            // Itt helyileg a böngészőből kinyomtatható lenne az oldal:
+            // window.print();
+        }
+
+        // Tanári belépés felület megjelenítése
+        function showTeacherLogin() {
+            const panel = document.getElementById('teacher-panel');
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+            if (panel.style.display === 'block') {
+                 window.scrollTo(0, document.body.scrollHeight);
+            }
+        }
+
+        // Tanári belépés logikája
+        function loginTeacherPanel() {
+            const code = document.getElementById('teacher-code').value;
+            const teacherContent = document.getElementById('teacher-content');
+            const correctCode = "Andi1974";
+
+            if (code === correctCode) {
+                alert("Sikeres belépés! Üdvözöljük a tanári felületen, Andi1974.");
+                teacherContent.style.display = 'block';
+            } else {
+                alert("Helytelen tanári kód. Kérjük, próbálja újra.");
+                teacherContent.style.display = 'none';
+            }
+        }
+
+        // Oldal betöltésekor indítás
+        loadQuestions();
+    </script>
+</body>
+</html>
